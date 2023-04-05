@@ -12,5 +12,5 @@ torchvision.datasets.DTD('root', 'train', 1, download=True)
 ```
 
 
-The codes folder contains train.py, test.py and graph.py.
+The codes folder contains train.py, test.py, graph.py and test.py.
 Just run one after the the other.
