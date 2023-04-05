@@ -1,8 +1,10 @@
 # CNN_dtd
 
-Just download and run
+Just download and run.
 
-Change path of location of dataset
+
+Change path of location of dataset.
+
 
 If not downloaded, use :
 ```
