@@ -19,6 +19,8 @@ import os
 from skimage.transform import resize
 from skimage.color import rgb2gray
 
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter()
 
 # If not done previously--> Run below commented codes
 1
@@ -167,16 +169,18 @@ for epoch in range(n_epochs):
         loss_val += criterion(output_val, y_val).item()
     
     # Converting loss to tensor format
-    loss_train = Variable(torch.tensor((loss_train/324),dtype=torch.float32) , requires_grad=True)
+    # loss_train = Variable(torch.tensor((loss_train/324),dtype=torch.float32) , requires_grad=True)
     
     print("Validation done!")    
     # Appending for plotting graph
-    val_losses.append(loss_val/36)
-    train_losses.append(loss_train.item()/324)
+    val_losses.append(loss_val/564)
+    train_losses.append(loss_train/5076)
 
+    writer.add_scalar("Loss/train", loss_train/5076, epoch)
+    print('Epoch : ',epoch+1, '\t', 'val loss :',loss_val/564, '\t', 'train loss :',loss_train/5076)
     
-
-    print('Epoch : ',epoch+1, '\t', 'val loss :',loss_val/36, '\t', 'train loss :',loss_train)
+writer.flush()
+writer.close()
 np.save("train_losses.npy", train_losses)
 np.save("val_losses.npy", val_losses)
 
