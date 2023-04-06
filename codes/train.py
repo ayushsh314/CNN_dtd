@@ -2,53 +2,55 @@
 # import pandas as pd
 import numpy as np
 
-# for reading and displaying images
-from skimage.io import imread
-import matplotlib.pyplot as plt
-
 # for creating validation set
-from sklearn.model_selection import train_test_split
+from torch.utils.data import random_split
 
 # PyTorch libraries and modules
-import torch
+import torch, torchvision
 from torch.autograd import Variable
-from torch.nn import Linear, ReLU, CrossEntropyLoss, Sequential, Conv2d, MaxPool2d, Module, Softmax, BatchNorm2d, Dropout
-from torch.optim import Adam, SGD
+from torch.nn import Linear, ReLU, CrossEntropyLoss, Sequential, Conv2d, MaxPool2d, Module, BatchNorm2d, Dropout
+from torch.optim import Adam
+
+# for reading and displaying images
+from torchvision.io import read_image
+import torchvision.transforms.functional as fn
 
 import os
-from skimage.transform import resize
-from skimage.color import rgb2gray
+
 
 from torch.utils.tensorboard import SummaryWriter
 writer = SummaryWriter()
 
 # If not done previously--> Run below commented codes
-1
-# train_img = []
-# train_y = []
-# path = 'C:/Users/varun/Coding/pattern_cnn/dtd/images/'
-# i=0
-# for filename in os.listdir(path):
-#     for images in os.listdir(path+filename) :
-#         img = imread(path+filename+'/'+images)
-#         img = rgb2gray(img)
-#         img = resize(img, (128, 128, 1))
-#         img = img.astype('float32')
-#         img /= 255.0
-#         train_img.append(img)
-#         train_y.append(i)
-#     i += 1
 
-# train_x = np.array(train_img)
+train_img = []
+train_y = []
+path = 'C:/Users/varun/Coding/pattern_cnn/dtd/images/'
+i=0
+for filename in os.listdir(path):
+    for images in os.listdir(path+filename) :
+        img = read_image(path+filename+'/'+images)
+        img = fn.rgb_to_grayscale(img,num_output_channels = 1)
+        img = fn.resize(img, size = [128,128]).numpy()
+        img = img.astype('float32')
+        img /= 255.0
+        train_img.append(img)
+        train_y.append(i)
+    i += 1
 
-# train_x, val_x, train_y, val_y = train_test_split(train_x, train_y, test_size = 0.1)
-# val_y = np.array(val_y)
-# train_y = np.array(train_y)
+train_x = np.array(train_img)
 
-# train_x = np.save("train_x.npy", train_x)
-# train_y = np.save("train_y.npy", train_y)
-# val_x = np.save("val_x.npy", val_x)
-# val_y = np.save("val_y.npy", val_y)
+gen = torch.Generator().manual_seed(42)
+train_x, val_x = random_split(train_x, [0.9,0.1], generator=gen)
+train_y, val_y = random_split(train_y, [0.9,0.1], generator=gen)
+
+val_y = np.array(val_y)
+train_y = np.array(train_y)
+
+train_x = np.save("train_x.npy", train_x)
+train_y = np.save("train_y.npy", train_y)
+val_x = np.save("val_x.npy", val_x)
+val_y = np.save("val_y.npy", val_y)
 
 train_x = np.load("train_x.npy")
 train_y = np.load("train_y.npy")
@@ -60,7 +62,6 @@ train_x = train_x.reshape(5076, 1, 128, 128)
 train_x  = torch.from_numpy(train_x)
 
 # converting the target into torch format
-train_y = train_y.astype(int)
 train_y = torch.from_numpy(train_y)
 
 # converting validation images into torch format
@@ -68,7 +69,6 @@ val_x = val_x.reshape(564, 1, 128, 128)
 val_x  = torch.from_numpy(val_x)
 
 # converting the target into torch format
-val_y = val_y.astype(int)
 val_y = torch.from_numpy(val_y)
 
 # Defining the model
@@ -132,7 +132,7 @@ for epoch in range(n_epochs):
     loss_train = 0
     loss_val = 0
 
-    for i in range(5):
+    for i in range(5076):
         # getting the training set
         x_train, y_train = Variable(train_x[i:i+1]), Variable(train_y[i:i+1]).type(torch.LongTensor)
         
@@ -158,7 +158,7 @@ for epoch in range(n_epochs):
 
     print("Training done!")
         
-    for i in range(5):
+    for i in range(564):
         # # prediction for validation set
         x_val, y_val = Variable(val_x[i:i+1]), Variable(val_y[i:i+1]).type(torch.LongTensor)
         if torch.cuda.is_available():

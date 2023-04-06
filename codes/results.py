@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.metrics import accuracy_score
 import torch
 from torch.nn import Linear, ReLU, Sequential, Conv2d, MaxPool2d, Module, Softmax, BatchNorm2d, Dropout
 
@@ -11,7 +10,6 @@ val_x = val_x.reshape(564, 1, 128, 128)
 val_x  = torch.from_numpy(val_x)
 
 # converting the target into torch format
-val_y = val_y.astype(int)
 val_y = torch.from_numpy(val_y)
 
 class Net(Module):   
@@ -46,9 +44,11 @@ class Net(Module):
     
 # Model class must be defined somewhere
 model = Net()
-model.load_state_dict(torch.load('model.pth'))
+model.load_state_dict(torch.load('codes/model.pth'))
 
-
+def accuracy_score(arr1, arr2):
+    accuracy = np.sum(np.equal(arr1,arr2))/len(arr1)
+    return accuracy
 
 # prediction for validation set
 predictions = []
@@ -58,7 +58,7 @@ for i in range(564) :
 
     softmax = torch.exp(output)
     prob = list(softmax.detach().numpy())
-    predictions.append(np.argmax(prob, axis=1))
+    predictions.append(np.argmax(prob, axis=1).item())
 
 # accuracy on validation set
-print("Accuracy of model: ",accuracy_score(val_y, predictions))
+print("Accuracy of model: ",accuracy_score(val_y.tolist(), predictions))
