@@ -23,34 +23,34 @@ writer = SummaryWriter()
 
 # If not done previously--> Run below commented codes
 
-train_img = []
-train_y = []
-path = 'C:/Users/varun/Coding/pattern_cnn/dtd/images/'
-i=0
-for filename in os.listdir(path):
-    for images in os.listdir(path+filename) :
-        img = read_image(path+filename+'/'+images)
-        img = fn.rgb_to_grayscale(img,num_output_channels = 1)
-        img = fn.resize(img, size = [128,128]).numpy()
-        img = img.astype('float32')
-        img /= 255.0
-        train_img.append(img)
-        train_y.append(i)
-    i += 1
+# train_img = []
+# train_y = []
+# path = 'C:/Users/varun/Coding/pattern_cnn/dtd/images/'
+# i=0
+# for filename in os.listdir(path):
+#     for images in os.listdir(path+filename) :
+#         img = read_image(path+filename+'/'+images)
+#         img = fn.rgb_to_grayscale(img,num_output_channels = 1)
+#         img = fn.resize(img, size = [128,128]).numpy()
+#         img = img.astype('float32')
+#         img /= 255.0
+#         train_img.append(img)
+#         train_y.append(i)
+#     i += 1
 
-train_x = np.array(train_img)
+# train_x = np.array(train_img)
 
-gen = torch.Generator().manual_seed(42)
-train_x, val_x = random_split(train_x, [0.9,0.1], generator=gen)
-train_y, val_y = random_split(train_y, [0.9,0.1], generator=gen)
+# gen = torch.Generator().manual_seed(42)
+# train_x, val_x = random_split(train_x, [0.9,0.1], generator=gen)
+# train_y, val_y = random_split(train_y, [0.9,0.1], generator=gen)
 
-val_y = np.array(val_y)
-train_y = np.array(train_y)
+# val_y = np.array(val_y)
+# train_y = np.array(train_y)
 
-train_x = np.save("train_x.npy", train_x)
-train_y = np.save("train_y.npy", train_y)
-val_x = np.save("val_x.npy", val_x)
-val_y = np.save("val_y.npy", val_y)
+# train_x = np.save("train_x.npy", train_x)
+# train_y = np.save("train_y.npy", train_y)
+# val_x = np.save("val_x.npy", val_x)
+# val_y = np.save("val_y.npy", val_y)
 
 train_x = np.load("train_x.npy")
 train_y = np.load("train_y.npy")
@@ -117,7 +117,7 @@ if torch.cuda.is_available():
 print(model)
 
 # defining the number of epochs
-print("Number of epochs to run: ")
+print("Number of epochs to run(ideal 15 to 20): ")
 n_epochs = int(input())
 # empty list to store training losses
 train_losses = []
@@ -167,9 +167,6 @@ for epoch in range(n_epochs):
         
         output_val = model(x_val)
         loss_val += criterion(output_val, y_val).item()
-    
-    # Converting loss to tensor format
-    # loss_train = Variable(torch.tensor((loss_train/324),dtype=torch.float32) , requires_grad=True)
     
     print("Validation done!")    
     # Appending for plotting graph
